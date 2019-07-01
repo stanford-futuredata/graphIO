@@ -1,0 +1,114 @@
+import numpy as np 
+from networkx.linalg.laplacianmatrix import laplacian_matrix, normalized_laplacian_matrix
+from scipy.sparse.linalg import eigs as sparse_eigs
+import core.state as state
+import networkx as nx
+
+def _get_inputs():
+    G = state.GRAPH
+    n = len(state.GRAPH.nodes)
+    in_degrees = G.in_degree()
+    input_enc = np.array([in_degrees[i] == 0 for i in range(n)]).reshape(n,1)
+    return input_enc
+    
+def _get_laplacian_spectrum(k=None):
+    G = state.GRAPH
+    n = len(G.nodes)
+    input_enc = _get_inputs()
+    not_inputs = [i for i in range(n) if input_enc[i] == 0]
+    _adjust_weights()
+    A = nx.adjacency_matrix(G, weight="weight_out")
+    in_deg = np.take(input_enc.T @ A, not_inputs)
+
+    subGraph = nx.subgraph(G, not_inputs)
+    subG = subGraph.to_undirected()
+    return [_get_lambdas(subsubG, k) for subsubG in nx.connected_component_subgraphs(subG)]
+    
+
+
+def _get_lambdas(subG, k=None):
+    deg = np.array([d for _, d in subG.degree(weight="weight_out")])
+    adjust_deg = deg
+    #adjust_deg = deg + in_deg
+
+    D = np.diag(adjust_deg)
+    A = nx.adjacency_matrix(subG, weight="weight_out")
+    lap = np.diag(adjust_deg) - A
+    if k is None:
+        k = len(subG.nodes) - 2
+    lambdas = sparse_eigs(lap, k=k, return_eigenvectors=False, which="SR") # get k smallest eigenvalues
+    return np.sort(lambdas), subG
+
+
+
+
+
+def _adjust_weights():
+    G = state.GRAPH
+    out_degrees = G.out_degree()
+    for u, v, d in G.edges(data=True):
+        deg = out_degrees[u]
+        d['weight_out'] = 1/deg
+
+# def _get_lap_mat(normalized=False):
+#     _adjust_weights()
+#     if normalized:
+#         normalized_laplacian_matrix(state.GRAPH.to_undirected(), weight="weight_out")
+#     else:
+#         laplacian_matrix(state.GRAPH.to_undirected(), weight="weight_out")
+
+# def _get_laplacian_spectrum(normalized=False, k=None):
+#     # get the k smallest eigenvalues of the laplacian
+#     lap = get_lap_mat(normalized)
+#     if k is None:
+#         k = len(state.GRAPH.nodes()) - 2
+#     lambdas = sparse_eigs(lap, k=k, return_eigenvectors=False, which="SR") # get k smallest eigenvalues
+#     return np.sort(lambdas)
+
+def _compute_w_eigs(n, k):
+    eig_vals = np.ones(k) * np.floor(n/k)
+    for i in range(n % k):
+        eig_vals[i] += 1
+    return eig_vals
+
+def _laplacian_spectral_bound(lambdas, M, subG):
+    # given lambdas, compute the spectral bound
+    k, n = len(lambdas), len(subG.nodes)
+    k_vals = list(range(2,k))
+    def compute_bound(i):
+        w_eigs = _compute_w_eigs(n, i)
+        return np.dot(w_eigs, lambdas[:i]) - 2*i*M
+    vals = [compute_bound(i) for i in k_vals]
+    maxval = np.max(vals)
+    maxk = k_vals[np.argmax(vals)]
+    return maxval, maxk
+    
+def count_inputs_outputs():
+    G = state.GRAPH
+    n = len(G.nodes)
+    out_degrees = G.out_degree()
+    in_degrees = G.in_degree()
+    disk_count = 0
+    for i in range(n):
+        if in_degrees[i] == 0 or out_degrees[i] == 0:
+            disk_count += 1
+    return disk_count
+
+def _compute_M_bound(M, lambvals):
+    result = 0
+    for lamb, subG in lambvals:
+        val = _laplacian_spectral_bound(lamb, M, subG)
+        print(val)
+        result += np.maximum(0,np.real(val[0]))
+    return result 
+
+def compute_eigenvalue_bound(M_vals, k=None):
+    disk_count = count_inputs_outputs()
+    print(disk_count)
+    lambvals = _get_laplacian_spectrum(k)
+    vals = []
+    for M in M_vals:
+        val  = _compute_M_bound(M, lambvals)
+        print(M, val)
+        vals.append(val)
+    return disk_count, vals
