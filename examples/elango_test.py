@@ -6,7 +6,7 @@ import core.solver as solver
 from convolve import convolve
 from fft import fft_example
 from matmult import matmult, strassen_matmult
-from core.elango_solver import get_elango_bound
+from core.elango_solver import get_elango_bound, solve_elango_ilp_bound
 from dct import dct_example
 
 
@@ -15,7 +15,7 @@ M = int(sys.argv[2])
 
 #dct_example(t)
 #fft_example(t)
-#convolve(t)
 #matmult(t)
 strassen_matmult(t)
-print(get_elango_bound(M))
+# print(get_elango_bound(M))
+print(solve_elango_ilp_bound(M))

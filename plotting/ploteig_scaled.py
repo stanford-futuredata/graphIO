@@ -8,11 +8,11 @@ import plotconfig
 
 idx = int(sys.argv[1])
 
-titles = ["Strassen MatMult", "FFT", "DCT", "Naive MatMult"]
-title = "Spectral I/O Bound vs Published Bound for %s Graph" % titles[idx]
+titles = ["Strassen", "FFT", "DCT", "Naive MatMult"]
+title = "Spectral I/O Bound vs Analytical Bound for %s" % titles[idx]
 
 fname = "data/eig.csv"
-with open(fname, "r") as f:
+with open(fname, "r") as f: 
     reader = csv.reader(f, delimiter=",")
     next(reader)
     y = []
@@ -36,6 +36,6 @@ plt.ylabel("Computed I/O Bound")
 plt.title(title)
 plt.tight_layout()
 outnames =["strassen", "fft", "dct", "matmult"]
-plt.savefig("plots/eigplotsScaled/%s.png" % outnames[idx], figsize=(5,6))
+plt.savefig("plots/eigplotsScaled/%s.png" % outnames[idx])
 # plt.show()
 

@@ -5,8 +5,8 @@ import numpy as np
 
 import plotconfig
 
-titles = ["FFT", "Naive MatMult", "Strassen MatMult", "DCT"]
-titles = ["I/O Bound vs Published Bound for M=4,5 on %s Graph" % t for t in titles]
+titles = ["FFT", "Naive MatMult", "Strassen", "DCT"]
+titles = ["I/O Bound vs Analytical Bound for %s" % t for t in titles]
 
 filenames =["fft", "matmult", "strassen", "dct"]
 filenames = ["data/45plots/%s.csv" % t for t in filenames]
@@ -41,14 +41,14 @@ with open(filenames[idx], "r") as f:
     vals = np.array(vals).T
     # vals = np.array([ [float(x) for x in r] for r in reader]).T
 
-    x, y = get_vals(vals[0], vals[1])
-    plt.plot(x, y, "b*-", label="Partitioned ILP, M=4")
-    x, y = get_vals(vals[0], vals[2])
-    plt.plot(x,y, "b*:", label="Partitioned ILP, M=5")
     x, y = get_vals(vals[0], vals[3])
     plt.plot(x,y, "rd-", label="Spectral, M=4")
     x, y = get_vals(vals[0], vals[4])
     plt.plot(x,y, "rd:", label="Spectral, M=5")
+    x, y = get_vals(vals[0], vals[1])
+    plt.plot(x, y, "b*-", label="Partitioned ILP, M=4")
+    x, y = get_vals(vals[0], vals[2])
+    plt.plot(x,y, "b*:", label="Partitioned ILP, M=5")
     x,y = get_vals(vals[0], vals[5])
     plt.plot(x,y,"co-", label="Convex min-cut, M=4")
     x,y = get_vals(vals[0], vals[6])

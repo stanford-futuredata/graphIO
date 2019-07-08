@@ -6,6 +6,44 @@ import metis
 import core.state as state
 from multiprocessing import Pool
 import functools
+import cvxpy as cp
+
+def solve_elango_ilp_bound(M):
+    G = state.GRAPH
+    n= len(G)
+    parts = int(np.ceil(n/state.MAX_LP_SIZE))
+    graphs = partition(parts)
+    result = 0
+    for graph in graphs:
+        result += solve_elango_ilp(graph, M)
+    return result
+
+
+def solve_elango_ilp(G, M):
+    G = nx.convert_node_labels_to_integers(G)
+    n = len(G.nodes)
+    X = cp.Variable(shape=(n), boolean=True)
+    Y = cp.Variable(shape=(n), boolean=True)
+    constrs = []
+    for u,v in G.edges:
+        constrs.append(X[u] + Y[u] >= X[v])
+    
+    for u in G.nodes:
+        if G.in_degree(u) == 0: # input
+            constrs.append(X[u] == 0)
+    
+    constrs.append(cp.sum(Y) <= 2*M)
+    obj = cp.Maximize(cp.sum(X))
+    prob = cp.Problem(obj, constrs)
+    prob.solve(solver=cp.GUROBI, verbose=True, Threads=state.NUM_THREADS)
+    assert(prob.status in [cp.OPTIMAL, cp.OPTIMAL_INACCURATE])
+    val = prob.value
+    print(val, n)
+    return max(0,M*(np.ceil(n/val) - 1))
+
+
+
+
 def get_dead_anc(G, x):
     # return the dead ancestors
     ancestors = nx.ancestors(G,x)
@@ -68,16 +106,12 @@ def subdag(G, M):
     with Pool(state.NUM_THREADS) as p: 
         fn = functools.partial(worker, G=G)
         result = p.map(fn, arr)
-    #for x in arr:
-    #    W = max(W, find_max_min_st_cut(transformGraph(G, x)))
     W = max(result)
     return max(0, 2*(W-M))
 
-def partition(M, parts):
+def partition(parts):
     G = state.GRAPH
     n = len(G.nodes)
-    #parts = math.ceil(float(n)/(2*M))
-    #parts = math.ceil(float(n)/(2*M))
     if parts == 1:
         return [G]
     else:
@@ -92,7 +126,7 @@ def partition(M, parts):
         return graphs
 
 def get_elango_bound_helper(M, parts):
-    partitions = partition(M, parts)
+    partitions = partition(parts)
     result = 0
     for p in partitions:
         interm_result = subdag(p, M)
@@ -100,16 +134,4 @@ def get_elango_bound_helper(M, parts):
     return result
 
 def get_elango_bound(M):
-    """
-    n = math.ceil(len(state.GRAPH.nodes)/float(2*M))
-    best_val = 0
-    for parts in range(2,3):
-        val = get_elango_bound_helper(M, parts)
-        print(parts, val)
-        if val < best_val:
-            break
-        else:
-            best_val = val
-    return best_val
-    """
     return get_elango_bound_helper(M, 1)

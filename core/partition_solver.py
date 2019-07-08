@@ -9,6 +9,7 @@ import cvxpy as cp
 import core.state as state
 import core.solver as solver
 
+CHECKPOINT = False
 
 class ILP_Bound:
     def __init__(self, verbose=True):
@@ -41,8 +42,9 @@ class ILP_Bound:
         Solve for a lower bound (from scratch)
         """
         # solve the partition from scratch
-        if not path.isdir(out_pkl_dir):
-            mkdir(out_pkl_dir) # make the directory if it doesn't already exist
+        if CHECKPOINT:
+            if not path.isdir(out_pkl_dir):
+                mkdir(out_pkl_dir) # make the directory if it doesn't already exist
         self.out_pkl_dir = out_pkl_dir
         self.M = M
         self.partitions = self._partition_graph() # partition the graph
@@ -64,11 +66,13 @@ class ILP_Bound:
     def _save_state(self):
         # save M, disk count, and partitions
         ilp_state = [self.M, self.disk_count, self.partitions]
-        pkl.dump(ilp_state, open("%s/state.pkl" % self.out_pkl_dir, "wb"))
+        if CHECKPOINT:
+            pkl.dump(ilp_state, open("%s/state.pkl" % self.out_pkl_dir, "wb"))
     
     def _save_results(self):
         # save sum results
-        pkl.dump(self.results, open("%s/results.pkl" % self.out_pkl_dir, "wb"))
+        if CHECKPOINT:
+            pkl.dump(self.results, open("%s/results.pkl" % self.out_pkl_dir, "wb"))
 
     def _solve(self):
         k = len(self.partitions)

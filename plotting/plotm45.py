@@ -7,14 +7,14 @@ import plotconfig
 
 
 
-titles = ["FFT", "Naive MatMult", "Strassen MatMult", "DCT"]
+titles = ["FFT", "Naive MatMult", "Strassen", "DCT"]
 subtitles = ["FFT Level", "Side Length", "Side Length", "DCT Level"]
-titles = ["I/O Bound vs %s for M=4,5 on %s Graph" % (subtitles[i], titles[i]) for i in range(len(titles))]
+titles = ["I/O Bound vs %s for %s" % (subtitles[i], titles[i]) for i in range(len(titles))]
 
 filenames =["fft", "matmult", "strassen", "dct"]
 filenames = ["data/45plots/%s.csv" % t for t in filenames]
 
-xlabels = [r"$l$", r"$n$", r"$n$", r"$l$"]
+xlabels = [r"$l=$ FFT Level", r"$n=$ Matrix Side Length", r"$n=$ Matrix Side Length", r"$l=$ DCT Level"]
 
 idx = int(sys.argv[1])
 
@@ -38,14 +38,15 @@ with open(filenames[idx], "r") as f:
     vals = np.array(vals).T
     # vals = np.array([ [float(x) for x in r] for r in reader]).T
 
-    x, y = get_vals(vals[0], vals[1])
-    plt.plot(x, y, "b*-", label="Partitioned ILP, M=4")
-    x, y = get_vals(vals[0], vals[2])
-    plt.plot(x,y, "b*:", label="Partitioned ILP, M=5")
+    
     x, y = get_vals(vals[0], vals[3])
     plt.plot(x,y, "rd-", label="Spectral, M=4")
     x, y = get_vals(vals[0], vals[4])
     plt.plot(x,y, "rd:", label="Spectral, M=5")
+    x, y = get_vals(vals[0], vals[1])
+    plt.plot(x, y, "b*-", label="Partitioned ILP, M=4")
+    x, y = get_vals(vals[0], vals[2])
+    plt.plot(x,y, "b*:", label="Partitioned ILP, M=5")
     x,y = get_vals(vals[0], vals[5])
     plt.plot(x,y,"co-", label="Convex min-cut, M=4")
     x,y = get_vals(vals[0], vals[6])

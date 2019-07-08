@@ -3,6 +3,8 @@ import matplotlib
 rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
 rc('text', usetex=True)
 matplotlib.rcParams.update(
-    {'axes.labelsize': 'x-large',
-    'axes.titlesize': 'x-large'}  
+    {
+    'axes.labelsize': '16',
+    'axes.titlesize': '20',
+    }  
 )
