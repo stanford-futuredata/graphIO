@@ -5,7 +5,7 @@ sys.path.append('..')
 import core.solver as solver
 from convolve import convolve
 from fft import fft_example
-from matmult import matmult, strassen_matmult, matmultTogether
+from matmult import matmult, strassen_matmult
 from core.eig_solver import compute_eigenvalue_bound
 from dct import dct_example
 
@@ -16,22 +16,46 @@ def run_long_test(k):
     for v in val:
         print(v[0])
 
-def run_test(k):
-    M=[4,5]
+def run_test(k, M):
     dc, vals = compute_eigenvalue_bound(M, k=k)
-    print(vals)
-    v1, v2 = np.real(vals[0][0]), np.real(vals[1][0])
-    print("%f,%f" % (v1, v2))
-t = int(sys.argv[1])
-k = int(sys.argv[2])
+    out = []
+    for i, M_ in enumerate(M):
+        val = vals[i]
+        out.append((M_, val[0], val[1]))
+    print(out)
+
+def matmult_test():
+    M = [64, 128, 256]
+    t = np.arange(4, 65, 4)
+    for t_ in t:
+        print(t_)
+        matmult(t_, alltogether=True)
+        solver.stats()
+        run_test(10, M)
+        solver.clear_graph()
+
+def strassen_matmult_test():
+    M = [64, 128, 256]
+    t = [6]
+    for t_ in t:
+        print(t_, 2**t_)
+        strassen_matmult(t_, alltogether=True)
+        solver.stats()
+        run_test(10, M)
+        solver.clear_graph()
+
+strassen_matmult_test()
+
+# t = int(sys.argv[1])
+# k = int(sys.argv[2])
 
 # fft_example(t)
 # dct_example(t)
-# matmultTogether(t)
-strassen_matmult(t, alltogether=True)
+# matmult(t, alltogether=True)
+# strassen_matmult(t, alltogether=True)
 
-solver.stats()
+# solver.stats()
 #convolve(t)
 #matmult(t)
 #checkerboard(t)
-run_test(k)
+# run_test(k)

@@ -96,3 +96,6 @@ def adjacency_matrix(directed=False):
     else:
         return nx.adjacency_matrix(state.GRAPH.to_undirected())
     
+def clear_graph():
+    state.GRAPH.clear()
+    state.GLOBAL_ID_COUNTER = 0
