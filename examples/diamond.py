@@ -12,6 +12,8 @@ def diamond_dag(n):
         for j in range(0,n):
             if i==0 and j==0:
                 continue
+            if i + j >= n:
+                continue
             prevleft = 1
             prevdown = 1
             if i == 0:
@@ -22,5 +24,5 @@ def diamond_dag(n):
                 arr[i,j] = arr[i-1, j] + arr[i, j-1]
 
 diamond_dag(50)
+# solver.render("out.png")
 print(compute_eigenvalue_bound([4,5,6], 5))
-    

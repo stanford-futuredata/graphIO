@@ -5,7 +5,7 @@ sys.path.append('..')
 import core.solver as solver
 from convolve import convolve
 from fft import fft_example
-from matmult import matmult, strassen_matmult
+from matmult import matmult, strassen_matmult, matmultTogether
 from core.eig_solver import compute_eigenvalue_bound
 from dct import dct_example
 
@@ -25,10 +25,13 @@ def run_test(k):
 t = int(sys.argv[1])
 k = int(sys.argv[2])
 
-dct_example(t)
-#fft_example(t)
+# fft_example(t)
+# dct_example(t)
+# matmultTogether(t)
+strassen_matmult(t, alltogether=True)
+
+solver.stats()
 #convolve(t)
 #matmult(t)
-#strassen_matmult(t)
 #checkerboard(t)
 run_test(k)

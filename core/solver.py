@@ -1,6 +1,5 @@
 import operator
 import core.state as state
-import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.drawing.nx_agraph import to_agraph
 import numpy as np
@@ -84,6 +83,12 @@ def render(outname="out.png"):
     P = to_agraph(state.GRAPH)
     P.layout(prog='dot')
     P.draw(outname)
+
+def stats():
+    degree_vec = state.GRAPH.in_degree()
+    degree_vec = [u[1] for u in degree_vec]
+    print("num nodes:", len(degree_vec), "max degree", np.max(degree_vec))
+
 
 def adjacency_matrix(directed=False):
     if directed:

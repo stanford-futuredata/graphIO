@@ -17,7 +17,7 @@ def transform(vector):
         beta  = [(vector[i] - vector[-(i + 1)]) for i in range(half)]
         # beta  = [(vector[i] - vector[-(i + 1)]) / (math.cos((i + 0.5) * math.pi / n) * 2.0) for i in range(half)]
         alpha = transform(alpha)
-        beta  = transform(beta )
+        beta  = transform(beta)
         result = []
         for i in range(half - 1):
             result.append(alpha[i])

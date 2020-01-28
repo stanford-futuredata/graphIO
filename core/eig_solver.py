@@ -20,13 +20,17 @@ def _adjust_weights():
 
 def _get_lap_mat():
     _adjust_weights()
-    return laplacian_matrix(state.GRAPH.to_undirected(), weight="weight_out")
+    G = state.GRAPH.to_undirected()
+    return nx.laplacian_matrix(G, weight="weight_out")
 
 def _get_laplacian_spectrum(k=None):
     # get the k smallest eigenvalues of the laplacian
     lap = _get_lap_mat()
     if k is None:
         k = len(state.GRAPH.nodes()) - 2
+    # print(lap)
+    
+    # lap = lap.asfptype()
     lambdas = sparse_eigs(lap, k=k, return_eigenvectors=False, which="SR") # get k smallest eigenvalues
     return np.real(np.sort(lambdas))
 
@@ -62,6 +66,6 @@ def count_inputs_outputs():
 
 def compute_eigenvalue_bound(M_vals, k=None):
     disk_count = count_inputs_outputs()
-    print(disk_count)
+    # print(disk_count)
     lambdas = _get_laplacian_spectrum(k)
     return disk_count, [_laplacian_spectral_bound(lambdas, M) for M in M_vals]
