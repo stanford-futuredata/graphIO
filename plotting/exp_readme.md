@@ -50,7 +50,7 @@ For Linux you can run:
 
 You will probably also need to add this to your environment file:
 
-    export METIS_DLL=<path to metis_install?/lib/libmetis.so
+    export METIS_DLL=/dfs/scratch0/saachi/gurobi/metis_install/lib/libmetis.so
 
 # Running the package
 ## DataNodes
@@ -89,12 +89,21 @@ The solver is in eig_solver.py
     _, val = compute_eigenvalue_bound(M, k) # compute spectral bound. 
 
 
+## Partition ILP Solver
+The solver is in partition_solver.py in core. Change CHECKPOINT in the solver file to True if checkpointing is desired. The partition size can be found in state.py.
+    from core.partition_solver import ILP_BOUND
 
-## Convex Min-Cut Solver
+    S = ILP_BOUND()
+    val = S.solve_lb(M, dirname) # lower bound via partitioned ilp
+    result, _ = S.solve_ILP(M) # solve exact ILP
+    X, val = result 
+
+## Convex Min-Cut Solver and 2S partition solver
 The baselines can be found in elango_solver.py.
-    from core.elango_solver import get_elango_bound
+    from core.elango_solver import get_elango_bound, solve_elango_ilp_bound
 
     val = get_elango_bound(M) # lower bound for  convex min-cut
+    val = solve_elango_ilp_bound(M) # lower bound for elango 2S partition
 
 # Examples 
 The computation graphs as well as the tests that appeared in the paper can be found in examples. The plot code can be found in plotting. 
