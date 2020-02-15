@@ -1,7 +1,7 @@
 # t = [2,3,4,5,6]
 import numpy as np
 
-graph_name = r"vs $l$ for $2^l$ point DCT"
+graph_name = r"for $2^l$ point DCT"
 x_label = r"$l$"
 x_bound_label = r"$l2^l$"
 out_name = "dct"
@@ -20,5 +20,5 @@ spectral = {
 convcut = {
     4: [8, 24, 56, 120, 248, 504, 1016, 2040],
     8: [0, 16, 48, 112, 240, 496, 1008, 2032],
-    16: [0, 0, 32, 96, 224, 480, 992, 201,],
+    16: [0, 0, 32, 96, 224, 480, 992, 2016],
 }

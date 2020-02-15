@@ -1,7 +1,7 @@
 # t = [2,3,4,5,6]
 import numpy as np
 
-graph_name = r"vs $n$ for $n \times n$ Naive Matmult"
+graph_name = r"for $n \times n$ Naive Matmult"
 x_label = r"$n$"
 x_bound_label = r"$n^3$"
 out_name = "matmult"

@@ -1,3 +1,5 @@
+import sys
+sys.path.append('..')
 import numpy as np
 import core.solver as solver 
 import core.state as state 
@@ -71,3 +73,7 @@ def strassen_helper(A,B, alltogether=False):
         return np.concatenate([first_row, second_row], axis=0)
     else:
         return np.array([[C11, C12], [C21, C22]])
+
+if __name__ == "__main__":
+    strassen_matmult(1, alltogether=True)
+    solver.render("strassen_mamult_out.png")

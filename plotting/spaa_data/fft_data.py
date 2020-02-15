@@ -1,7 +1,7 @@
 # t = [2,3,4,5,6]
 import numpy as np
 
-graph_name = r"vs $l$ for $2^l$ point FFT"
+graph_name = r"for $2^l$ point FFT"
 x_label = r"$l$"
 x_bound_label = r"$l2^l$"
 out_name = "fft"
@@ -18,5 +18,5 @@ spectral = {
 convcut = {
     4: [0, 0, 0, 8, 8, 24, 24, 56, 56, 120],
     8: [0, 0, 0, 0, 0, 16, 16, 48, 48, 112],
-    16: [0, 0, 0, 0, 0, 0, 0, 32, 32, 9],
+    16: [0, 0, 0, 0, 0, 0, 0, 32, 32, 96],
 }
